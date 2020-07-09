@@ -1,21 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Command.css";
 import CommandSymbol from "../CommandSymbol";
+import { inputChange, inputClear } from "../../actions/commandInput";
+import { connect } from "react-redux";
 
-export default function CommandInput() {
-  const [input, setInput] = useState("");
-
+function CommandInput({ inputValue, onInputChange, onInputClear }) {
   const handleChange = (e) => {
     e.preventDefault();
-    const value = e.target.value;
-    setInput(value);
+    onInputChange(e.target.value);
   };
 
-  const keyPressed = (event) => {
-    if (event.key === "Enter") {
-      const val = "";
-      setInput(val);
-      event.target.value = val;
+  const keyPressed = (e) => {
+    if (e.key === "Enter") {
+      onInputClear();
     }
   };
 
@@ -25,10 +22,27 @@ export default function CommandInput() {
       <input
         onChange={handleChange}
         onKeyPress={keyPressed}
-        value={input}
+        value={inputValue}
         placeholder="Enter a command..."
         className={"Com"}
       />
     </div>
   );
 }
+
+const mapStateToCommandInputProps = (state) => ({
+  inputValue: state.commandInput.inputValue,
+});
+const mapDispatchToCommandInputProps = (dispatch) => ({
+  onInputChange: (value) => {
+    dispatch(inputChange(value));
+  },
+  onInputClear: () => {
+    dispatch(inputClear());
+  },
+});
+
+export default connect(
+  mapStateToCommandInputProps,
+  mapDispatchToCommandInputProps
+)(CommandInput);
