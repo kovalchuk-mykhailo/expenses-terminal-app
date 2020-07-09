@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
+import CommandInput from "../components/CommandInput";
+import { connect } from "react-redux";
+import { getCurrenciesAsyncRequest } from "../actions/currencies";
 
-function App() {
-  return <div>Hello</div>;
+function App({ getCurrenciesAsync }) {
+  useEffect(() => {
+    getCurrenciesAsync();
+  }, []);
+
+  return <CommandInput />;
 }
 
-export default App;
+const mapDispatchToCurrenciesProps = (dispatch) => ({
+  getCurrenciesAsync: () => {
+    dispatch(getCurrenciesAsyncRequest());
+  },
+});
+
+export default connect(null, mapDispatchToCurrenciesProps)(App);

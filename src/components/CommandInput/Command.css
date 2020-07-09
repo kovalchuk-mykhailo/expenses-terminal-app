@@ -1,0 +1,14 @@
+.CommandContainer {
+  padding: 5px;
+  display: flex;
+  text-align: center;
+}
+
+.Com {
+  background-color: transparent;
+  border: 0px solid;
+  outline: none;
+  width: 95%;
+  float: right;
+  color: green;
+}
