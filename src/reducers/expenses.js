@@ -7,9 +7,7 @@ const initialState = {
 
 const getFilteredExpenses = (expenses, dateString) => {
   const date = getStandardStringDate(dateString);
-  return expenses.filter(
-    (expense) => getStandardStringDate(expense.date) !== date
-  );
+  return expenses.filter((expense) => expense.date !== date);
 };
 
 export const expensesReducer = (state = initialState, action) => {

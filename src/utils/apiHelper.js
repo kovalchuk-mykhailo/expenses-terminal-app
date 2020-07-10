@@ -1,4 +1,4 @@
-import { getListCurrenciesUrl } from "./urlHelper";
+import { getListCurrenciesUrl, getEurRateOfCurrencyUrl } from "./urlHelper";
 
 const getResponseJson = async (url) => {
   const response = await fetch(url);
@@ -10,4 +10,10 @@ export const listCurrenciesRequest = async () => {
   const { symbols } = await getResponseJson(url);
   const currencies = Object.keys(symbols);
   return currencies;
+};
+
+export const getEurRateOfCurrency = async (to) => {
+  const url = getEurRateOfCurrencyUrl(to);
+  const { rates } = await getResponseJson(url);
+  return rates[to];
 };
