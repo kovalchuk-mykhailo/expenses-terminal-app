@@ -4,16 +4,30 @@ import {
   isAddOptValid,
   isAmountSpentValid,
   isClearOptValid,
+  isCurrencyValid,
 } from "./optionsValidation";
-
-const {
+import {
   ADD_COMMAND,
   LIST_COMMAND,
   CLEAR_COMMAND,
   TOTAL_COMMAND,
-} = require("../constants/Commands");
-const { isDateValid, getStandardStringDate } = require("./dateHelper");
-const { getEurRateOfCurrency } = require("./apiHelper");
+} from "../constants/Commands";
+import {
+  isDateValid,
+  getStandardStringDate,
+  getSpecificStringDate,
+} from "./dateHelper";
+import { getEurRateOfCurrency } from "./apiHelper";
+import {
+  INVALID_CURRENCY,
+  INVALID_TOTAL_OPTIONS,
+  INVALID_LIST_OPTIONS,
+  INVALID_DATE,
+  INVALID_AMOUNT_MONEY_SPENT,
+  INVALID_ADD_OPTIONS,
+  INVALID_CLEAR_OPTIONS,
+  INVALID_COMMAND,
+} from "../constants/Errors";
 
 const generateExpense = (
   stringDate,
@@ -27,9 +41,16 @@ const generateExpense = (
   productName,
 });
 
-const listStrategy = (opt, expensesInstance) => {
-  //Should return expenses sorted  by date
+const convertExpensesToString = (expenses) => {
+  return expenses.map(
+    ({ date, amountMoneySpent, currency, productName }) =>
+      `${getSpecificStringDate(
+        date
+      )} ${productName}\n${amountMoneySpent} ${currency}`
+  );
+};
 
+const listStrategy = (opt, expensesInstance) => {
   if (isListOptValid(opt)) {
     const sorted = [...expensesInstance];
     sorted.sort((a, b) => {
@@ -37,53 +58,58 @@ const listStrategy = (opt, expensesInstance) => {
       const bDate = new Date(b.date);
       return aDate - bDate;
     });
-    return sorted;
-  } else throw new Error("INVALID list options");
+
+    return convertExpensesToString(sorted);
+  } else throw new Error(INVALID_LIST_OPTIONS);
 };
 
 const totalStrategy = async (opt, expensesInstance, currencies) => {
   let desiredCurrency;
   let sum = 0;
   if (isTotalOptValid(opt)) {
-    desiredCurrency = opt[0];
-  } else throw new Error("INVALID total options");
+    desiredCurrency = opt[0].toUpperCase();
+  } else throw new Error(INVALID_TOTAL_OPTIONS);
 
-  if (currencies.includes(desiredCurrency)) {
+  if (isCurrencyValid(currencies, desiredCurrency)) {
     const memoRates = new Map();
+
     for (let i = 0; i < expensesInstance.length; i++) {
       const expense = expensesInstance[i];
+
       if (expense.currency === desiredCurrency) {
         sum += expense.amountMoneySpent;
       } else if (memoRates.has(expense.currency)) {
         sum += expense.amountMoneySpent * memoRates.get(expense.currency);
       } else {
-        // Find rate
         let rateDesiredResp = await getEurRateOfCurrency(desiredCurrency);
-        if (desiredCurrency !== "EUR") {
+
+        if (expense.currency !== "EUR") {
           const rateExpenseResp = await getEurRateOfCurrency(expense.currency);
           rateDesiredResp = rateDesiredResp / rateExpenseResp;
         }
 
-        //Memorize desired rate
         memoRates.set(expense.currency, rateDesiredResp);
 
         const moneySpent = expense.amountMoneySpent * rateDesiredResp;
         sum += moneySpent;
       }
     }
-  } else throw new Error("Invalid currency");
+  } else throw new Error(INVALID_CURRENCY);
 
-  return { sum, currency: desiredCurrency };
+  const resultString = `${sum.toFixed(2)} ${desiredCurrency}`;
+
+  return [resultString];
 };
 
 const addStrategy = (opt, expensesInstance, currencies, onAddExpense) => {
   let result = [];
   if (isAddOptValid(opt)) {
     const [date, amountSpent, currency, productName] = opt;
-    if (!isDateValid(date)) throw new Error("Invalid Date");
+    if (!isDateValid(date)) throw new Error(INVALID_DATE);
     if (!isAmountSpentValid(amountSpent))
-      throw new Error("Invalid AmountSpent");
-    if (!currencies.includes(currency)) throw new Error("Invalid Currency");
+      throw new Error(INVALID_AMOUNT_MONEY_SPENT);
+    if (!isCurrencyValid(currencies, currency))
+      throw new Error(INVALID_CURRENCY);
 
     const inputExpense = generateExpense(
       date,
@@ -95,21 +121,21 @@ const addStrategy = (opt, expensesInstance, currencies, onAddExpense) => {
     onAddExpense(inputExpense);
 
     result = [...expensesInstance, inputExpense];
-  } else throw new Error("Invalid ADD Options");
-  return result;
+  } else throw new Error(INVALID_ADD_OPTIONS);
+  return convertExpensesToString(result);
 };
 
 const clearStrategy = (opt, expensesInstance, onClearExpenses) => {
   if (isClearOptValid(opt) && isDateValid(opt[0])) {
-    const date = new Date(opt[0]).toString();
+    const date = getStandardStringDate(opt[0]);
 
     onClearExpenses(date);
 
     const resultExpenses = expensesInstance.filter(
       (expense) => expense.date !== date
     );
-    return resultExpenses;
-  } else throw new Error("INVALID Clear Options");
+    return convertExpensesToString(resultExpenses);
+  } else throw new Error(INVALID_CLEAR_OPTIONS);
 };
 
 export const parseInput = async (
@@ -152,14 +178,13 @@ export const parseInput = async (
           commandResult = await totalStrategy(options, expenses, currencies);
           break;
         default:
-          throw new Error("Invalid command");
+          throw new Error(INVALID_COMMAND);
       }
-    } else throw new Error("Invalid options");
+    } else throw new Error(INVALID_COMMAND);
 
     historyItem = { ...historyItem, result: commandResult };
   } catch (error) {
-    const errMsg = error.message;
-    historyItem = { ...historyItem, error: errMsg };
+    historyItem = { ...historyItem, error: error.message };
   }
   return historyItem;
 };

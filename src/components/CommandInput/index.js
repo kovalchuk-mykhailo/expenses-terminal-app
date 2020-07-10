@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./Command.css";
+import styles from "./commandInput.module.css";
 import CommandSymbol from "../CommandSymbol";
 import { inputChange, inputClear } from "../../actions/commandInput";
 import { connect } from "react-redux";
@@ -8,6 +8,7 @@ import { addExpense, clearSomeExpenses } from "../../actions/expenses";
 import { parseInput } from "../../utils/parseCommandHelper";
 
 function CommandInput({
+  history,
   inputValue,
   expenses,
   currencies,
@@ -42,8 +43,12 @@ function CommandInput({
     commandInput.focus();
   }, []);
 
+  useEffect(() => {
+    commandInput.scrollIntoView({ behavior: "smooth" });
+  }, [history]);
+
   return (
-    <div className="CommandContainer">
+    <div className={styles.InputContainer}>
       <CommandSymbol />
       <input
         ref={(input) => {
@@ -53,19 +58,20 @@ function CommandInput({
         onKeyPress={onKeyPressed}
         value={inputValue}
         placeholder="Enter a command..."
-        className={"Com"}
+        className={styles.Input}
       />
     </div>
   );
 }
 
-const mapStateToCommandInputProps = (state) => ({
+const mapStateToProps = (state) => ({
+  history: state.commandHistory,
   inputValue: state.commandInput.inputValue,
   currencies: state.currencies.values,
   expenses: state.expenses.values,
 });
 
-const mapDispatchToCommandInputProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   onInputChange: (value) => {
     dispatch(inputChange(value));
   },
@@ -83,7 +89,4 @@ const mapDispatchToCommandInputProps = (dispatch) => ({
   },
 });
 
-export default connect(
-  mapStateToCommandInputProps,
-  mapDispatchToCommandInputProps
-)(CommandInput);
+export default connect(mapStateToProps, mapDispatchToProps)(CommandInput);

@@ -1,20 +1,26 @@
 import React, { useEffect } from "react";
-import CommandInput from "../components/CommandInput";
+import CommandInput from "./CommandInput";
 import { connect } from "react-redux";
 import { getCurrenciesAsyncRequest } from "../actions/currencies";
+import HistoryList from "./HistoryList";
 
 function App({ getCurrenciesAsync }) {
   useEffect(() => {
     getCurrenciesAsync();
   }, []);
 
-  return <CommandInput />;
+  return (
+    <div>
+      <HistoryList />
+      <CommandInput />
+    </div>
+  );
 }
 
-const mapDispatchToCurrenciesProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch) => ({
   getCurrenciesAsync: () => {
     dispatch(getCurrenciesAsyncRequest());
   },
 });
 
-export default connect(null, mapDispatchToCurrenciesProps)(App);
+export default connect(null, mapDispatchToProps)(App);

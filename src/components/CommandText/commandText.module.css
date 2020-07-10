@@ -1,14 +1,12 @@
-.CommandContainer {
+.TextContainer {
   padding: 5px;
   display: flex;
   text-align: center;
 }
 
-.Com {
-  background-color: transparent;
+.Text {
   border: 0px solid;
   outline: none;
-  width: 95%;
   float: right;
-  color: green;
+  margin-left: 5px;
 }

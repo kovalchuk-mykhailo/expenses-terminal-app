@@ -1,4 +1,4 @@
-import { ADD_EXPENSE, CLEAR_SOME_EXPENSES } from "../constants/expenses";
+import { ADD_EXPENSE, CLEAR_SOME_EXPENSES } from "../constants/Expenses";
 import { getStandardStringDate } from "../utils/dateHelper";
 
 const initialState = {

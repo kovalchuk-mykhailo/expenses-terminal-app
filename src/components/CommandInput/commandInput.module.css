@@ -1,0 +1,13 @@
+.InputContainer {
+  padding: 5px;
+  display: flex;
+  text-align: center;
+}
+
+.Input {
+  background-color: transparent;
+  border: 0px solid;
+  outline: none;
+  width: 95%;
+  margin-left: 5px;
+}

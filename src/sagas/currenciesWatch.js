@@ -8,7 +8,6 @@ import {
 import { listCurrenciesRequest } from "../utils/apiHelper";
 
 function* requestCurrenciesAsync() {
-  yield call(() => console.log("watchCurrenciesAsync"));
   try {
     yield put(getCurrenciesRequest());
 
