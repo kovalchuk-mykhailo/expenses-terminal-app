@@ -1,9 +1,28 @@
 # Expenses terminal App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-**Note: run `npm install` for install all project dependecies**
-
+** **
+## Installing
+1. Run `npm install` for install all project dependecies;
+2. Create `.env` file in a root directory and put `REACT_APP_FIXER_API_KEY` variable with your Fixer api key there.
+** **
+## Available commands inside the application
+1. Add expense:<br />
+`add [date] [number] [currency] [name]` where <br />
+[date] ​ — ​ is the date when expense occurred, <br />
+[number] ​ — ​ is an amount of money spent, <br />
+[currency] ​ — ​ the currency in which expense occurred, <br />
+[name] ​ — ​ is the name of product purchased.<br />
+Example: `add 2017-04-25 12 USD Jogurt`.<br />
+2. Clear expenses by date:<br />
+`clear [date]` where<br />
+[date] ​ — ​ is the date for which all expenses should be removed.
+3. Show the list of all expenses sorted by date:<br />
+`list`<br />
+4. Calculate the total amount of money spent:<br />
+`total [currency]` where<br />
+[currency]​ — ​ is the currency in which total amount of expenses should be presented<br />
+** **
 ## Available Scripts
 
 In the project directory, you can run:
