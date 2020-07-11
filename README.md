@@ -1,10 +1,13 @@
 # Expenses terminal App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
 ** **
 ## Installing
+**Version of `node` must be at least 12.18.2**
+
 1. Run `npm install` for install all project dependecies;
-2. Create `.env` file in a root directory and put `REACT_APP_FIXER_API_KEY` variable with your Fixer api key there.
+2. **Create `.env` file in a root directory and put `REACT_APP_FIXER_API_KEY` variable with your Fixer api key there.**
 ** **
 ## Available commands inside the application
 1. Add expense:<br />
